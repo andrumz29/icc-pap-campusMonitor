@@ -4,11 +4,13 @@
 package icc.pap.campusmonitor;
 
 import icc.pap.campusmonitor.models.Lectura;
-
+import icc.pap.campusmonitor.models.Reporte;
+//Andres Eduardo Mendez
 public class App {
 
     public static void main(String[] args) {
         runLectura();
+         runTransformaciones();
     }
 
     private static void runLectura() {
@@ -25,5 +27,54 @@ public class App {
         System.out.println("Ocupación: " + lectura1.getValor());
     }
 
+     private static void runTransformaciones() {
+        Lectura<Double> temperatura = new Lectura<>("S01", 22.5, "°C");
+        Lectura<Integer> ocupacion = new Lectura<>("S02", 18, "personas");
 
+        Lectura<Double> fahrenheit = temperatura.transformar(
+            c -> c * 9.0 / 5.0 + 32, "°F"
+        );
+      //recuperamos el valor sin casting
+        Lectura<String> texto = ocupacion.transformar(
+            n -> n + " personas", "texto"
+        );
+
+        String resultado = texto.getValor();
+
+        System.out.println("\n Transformaciones ");
+        System.out.println("Original: " + temperatura.getIdSensor()  + temperatura.getValor() + " " + temperatura.getUnidad());
+        System.out.println("Transformada: " + fahrenheit.getIdSensor() +  fahrenheit.getValor() + " " + fahrenheit.getUnidad());
+
+        System.out.println("Original: " + ocupacion.getIdSensor() + " | " + ocupacion.getValor() + " " + ocupacion.getUnidad());
+        System.out.println("Transformada: " + texto.getIdSensor() + " | " + resultado + " | unidad: " + texto.getUnidad());
+
+        System.out.println("Identificadores conservados: "   + (temperatura.getIdSensor().equals(fahrenheit.getIdSensor())
+            && ocupacion.getIdSensor().equals(texto.getIdSensor())));
+
+        System.out.println("Originales sin cambios: "  + (temperatura.getValor() == 22.5   && ocupacion.getValor() == 18));
+
+        try {
+            temperatura.transformar(null, "°F");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Conversor nulo: " + e.getMessage());
+        }
+
+        try {
+            temperatura.transformar(c -> null, "°F");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Resultado nulo: " + e.getMessage());
+        }
+
+        try {
+            temperatura.transformar(c -> c, "");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Unidad vacía: " + e.getMessage());
+        }
+        //DOUBLE -> REPOORTE
+        System.out.println("\n Transformaciones a Reporte ");
+        Lectura<Double> temperatura2 =    new Lectura<>("S01", 22.5, "°C");
+        Lectura<Reporte> reporte = temperatura2.transformar(  valor -> new Reporte( temperatura2.getIdSensor(),   valor,   temperatura2.getUnidad() ),    "reporte");
+        System.out.println(reporte.getValor()+" "+reporte.getUnidad()+" "+reporte.getIdSensor());
+    }
 }
+
