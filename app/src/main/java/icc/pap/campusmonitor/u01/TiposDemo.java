@@ -1,9 +1,6 @@
 
 
-package icc.pap.campusmponitor.u01;
-
-import main.java.icc.pap.campusmonitor.u01.Caja;
-import main.java.icc.pap.campusmonitor.u01.Sensor;
+package icc.pap.campusmonitor.u01;
 
 public class TiposDemo {
     public static void main(String[] args) {
